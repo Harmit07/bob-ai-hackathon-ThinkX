@@ -1,79 +1,133 @@
-# Setup Guide
-
-> **This file is read by the automated evaluation pipeline. Be precise and complete.**
+# Setup Guide: Grid Load Optimization & Renewable Energy Performance Advisor
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+| Requirement | Version |
+|---|---|
+| Python | 3.10+ |
+| Node.js | 18+ |
+| npm | 9+ |
 
-- [ ] [e.g., Python 3.11+]
-- [ ] [e.g., Node.js 18+]
-- [ ] [e.g., Docker Desktop]
-- [ ] [e.g., An IBM Cloud account with watsonx.ai access]
+---
 
-## Environment Variables
-
-Copy `.env.example` to `.env` and fill in the values:
+## 1. Clone the Repository
 
 ```bash
+git clone <your-repo-url>
+cd bob-ai-hackathon-ThinkX
+```
+
+---
+
+## 2. Backend Setup (FastAPI)
+
+```bash
+cd src/backend
+
+# Create virtual environment (recommended)
+python -m venv .venv
+
+# Activate virtual environment
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Copy environment file
 cp .env.example .env
-```
+# Edit .env if needed (optional — app runs without watsonx.ai credentials)
 
-| Variable | Description | Required |
-|---|---|---|
-| `WATSONX_API_KEY` | Your IBM watsonx.ai API key | Yes |
-| `WATSONX_PROJECT_ID` | Your watsonx.ai project ID | Yes |
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `SLACK_WEBHOOK_URL` | Slack webhook for alerts | No |
-
-## Installation
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/[your-org]/[your-repo].git
-cd [your-repo]
-
-# 2. Install backend dependencies
-[your command — e.g.: pip install -r requirements.txt]
-
-# 3. Install frontend dependencies (if applicable)
-[your command — e.g.: cd frontend && npm install]
-
-# 4. Set up the database (if applicable)
-[your command — e.g.: python manage.py migrate]
-```
-
-## Running the Application
-
-```bash
 # Start the backend
-[your command — e.g.: uvicorn app.main:app --reload]
-
-# Start the frontend (in a separate terminal, if applicable)
-[your command — e.g.: cd frontend && npm run dev]
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The application will be available at: `http://localhost:[PORT]`
+The backend will be available at: http://localhost:8000
 
-## Running Tests
+Interactive API docs: http://localhost:8000/docs
+
+> **Note:** On first startup, the ML models (XGBoost + Isolation Forest) train on startup.
+> This takes ~20–30 seconds. Subsequent requests are fast.
+
+---
+
+## 3. Frontend Setup (Next.js)
+
+Open a **new terminal**:
 
 ```bash
-[your test command — e.g.: pytest tests/ -v]
+cd src/frontend
+
+# Install dependencies
+npm install
+
+# Copy environment file
+cp .env.local.example .env.local
+# Default: NEXT_PUBLIC_API_URL=http://localhost:8000 — no changes needed
+
+# Start the frontend development server
+npm run dev
 ```
 
-## Quick Demo (Optional)
+The dashboard will be available at: http://localhost:3000
 
-If you have a demo script or sample data to showcase the project quickly:
+---
 
-```bash
-[e.g.: python demo/seed_demo_data.py]
-[e.g.: open http://localhost:8000/demo]
+## 4. View the Dashboard
+
+Open your browser to **http://localhost:3000**
+
+The dashboard will:
+1. Load real-time grid telemetry (simulated)
+2. Show anomaly alerts if detected
+3. Display 48h historical + 24h forecast charts
+4. Provide AI-generated optimization recommendations and root cause analysis
+5. Auto-refresh every 30 seconds
+
+---
+
+## 5. API Reference
+
+All endpoints accessible at http://localhost:8000/docs
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/advisor/` | Full advisory (primary endpoint used by dashboard) |
+| `GET /api/grid/snapshot` | Real-time grid snapshot |
+| `GET /api/grid/history?hours=48` | Historical grid data |
+| `GET /api/forecast/?hours=24` | 24h forecast |
+| `GET /api/anomaly/` | Anomaly detection |
+| `GET /api/optimization/` | Dispatch optimization |
+
+---
+
+## 6. Optional: watsonx.ai Integration
+
+To enable IBM Granite LLM-powered narrative generation:
+
+1. Register at https://dataplatform.cloud.ibm.com/
+2. Create a watsonx.ai project and get your API key
+3. Edit `src/backend/.env`:
+
+```env
+WATSONX_API_KEY=your-api-key
+WATSONX_PROJECT_ID=your-project-id
+WATSONX_URL=https://us-south.ml.cloud.ibm.com
+WATSONX_MODEL_ID=ibm/granite-13b-instruct-v2
 ```
+
+4. See `docs/architecture.md` for the integration code snippet
+
+---
 
 ## Troubleshooting
 
-| Issue | Solution |
+| Issue | Fix |
 |---|---|
-| [e.g., `ModuleNotFoundError`] | [e.g., Run `pip install -r requirements.txt` again] |
-| [e.g., Database connection refused] | [e.g., Ensure PostgreSQL is running: `docker compose up db`] |
-| [e.g., watsonx.ai 401 error] | [e.g., Check `WATSONX_API_KEY` in your `.env` file] |
+| `ModuleNotFoundError` | Make sure you activated the virtual environment |
+| `Cannot reach API` error in dashboard | Ensure backend is running on port 8000 |
+| Frontend won't start | Run `npm install` first |
+| Slow first API response | ML models train on startup — wait 30s |
+| CORS error | Backend already has `allow_origins=["*"]` configured |
