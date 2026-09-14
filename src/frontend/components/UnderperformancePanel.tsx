@@ -1,72 +1,120 @@
-interface Props { data: any }
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { Progress } from '@/components/ui/Progress'
+import { Sun, Wind, AlertTriangle } from 'lucide-react'
 
-function PerformanceBar({ label, actual, expected, color }: { label: string; actual: number; expected: number; color: string }) {
+interface PerformanceBarProps {
+  icon: React.ReactNode
+  label: string
+  actual: number
+  expected: number
+}
+
+function PerformanceBar({ icon, label, actual, expected }: PerformanceBarProps) {
   const pct = expected > 10 ? Math.min(100, (actual / expected) * 100) : 100
-  const barColor = pct >= 95 ? '#3fb950' : pct >= 80 ? '#d29922' : pct >= 60 ? '#db6d28' : '#f85149'
-  const status = pct >= 95 ? 'Optimal' : pct >= 80 ? 'Minor deviation' : pct >= 60 ? 'Underperforming' : 'Critical'
+  const variant: 'green' | 'yellow' | 'orange' | 'red' =
+    pct >= 95 ? 'green' : pct >= 80 ? 'yellow' : pct >= 60 ? 'orange' : 'red'
+  const statusLabel = pct >= 95 ? 'Optimal' : pct >= 80 ? 'Minor Deviation' : pct >= 60 ? 'Underperforming' : 'Critical'
+  const badgeVariant: 'green' | 'yellow' | 'orange' | 'red' = variant
 
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <span style={{ fontSize: 18 }}>{label === 'Solar' ? '☀️' : '💨'}</span>
-        <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}>{label}</span>
-        <span style={{ fontWeight: 700, fontSize: 18, color: barColor }}>{Math.round(pct)}%</span>
-        <span style={{ fontSize: 11, color: barColor, background: `${barColor}20`, padding: '2px 8px', borderRadius: 12, border: `1px solid ${barColor}40` }}>{status}</span>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm font-semibold text-slate-200 font-mono">
+          {icon}
+          {label}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-extrabold font-mono" style={{
+            color: pct >= 95 ? '#34d399' : pct >= 80 ? '#facc15' : pct >= 60 ? '#fb923c' : '#f87171'
+          }}>
+            {Math.round(pct)}%
+          </span>
+          <Badge variant={badgeVariant} size="sm">{statusLabel}</Badge>
+        </div>
       </div>
-      <div className="progress-track" style={{ height: 12 }}>
-        <div className="progress-fill" style={{ width: `${pct}%`, background: barColor }} />
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 11, color: 'var(--muted)' }}>
-        <span>Actual: <b style={{ color: 'var(--text)' }}>{Math.round(actual)} MW</b></span>
-        <span>Expected: <b style={{ color: 'var(--text)' }}>{Math.round(expected)} MW</b></span>
-        {expected > actual && <span style={{ color: '#db6d28' }}>−{Math.round(expected - actual)} MW deficit</span>}
+      <Progress value={pct} variant={variant} size="md" />
+      <div className="flex justify-between text-xs font-mono text-slate-400">
+        <span>Actual: <span className="text-slate-200 font-bold">{Math.round(actual)} MW</span></span>
+        <span>Expected: <span className="text-slate-200 font-bold">{Math.round(expected)} MW</span></span>
+        {expected > actual && (
+          <span className="text-orange-400 font-bold">−{Math.round(expected - actual)} MW deficit</span>
+        )}
       </div>
     </div>
   )
 }
 
+interface Props { data: any }
+
 export default function UnderperformancePanel({ data }: Props) {
   if (!data) return null
-  const solar = data.solar || {}
-  const wind  = data.wind  || {}
+
+  const solar  = data.solar  || {}
+  const wind   = data.wind   || {}
   const alerts = data.alerts || []
-  const perf = data.overall_performance || 'normal'
-  const perfPill = perf === 'normal' ? 'pill-green' : perf === 'degraded' ? 'pill-yellow' : 'pill-red'
+  const perf   = data.overall_performance || 'normal'
+  const perfVariant: 'green' | 'yellow' | 'red' =
+    perf === 'normal' ? 'green' : perf === 'degraded' ? 'yellow' : 'red'
 
   return (
-    <div className="card fade-in">
-      <div className="card-title" style={{ justifyContent: 'space-between' }}>
-        <span>⚡ Renewable Asset Performance</span>
-        <span className={`pill ${perfPill}`}>{perf.toUpperCase()}</span>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-slate-200">
+          <AlertTriangle className="w-4 h-4 text-yellow-400" />
+          RENEWABLE ASSET PERFORMANCE
+        </CardTitle>
+        <Badge variant={perfVariant} size="sm">{perf.toUpperCase()}</Badge>
+      </CardHeader>
 
-      <PerformanceBar label="Solar"  actual={solar.actual_mw || 0} expected={solar.expected_mw || 0} color="#d29922" />
-      <PerformanceBar label="Wind"   actual={wind.actual_mw  || 0} expected={wind.expected_mw  || 0} color="#22d3ee" />
+      <CardContent className="space-y-5">
+        {/* Solar bar */}
+        <PerformanceBar
+          icon={<Sun className="w-4 h-4 text-yellow-400" />}
+          label="Solar Fleet"
+          actual={solar.actual_mw  || 0}
+          expected={solar.expected_mw || 0}
+        />
 
-      {alerts.length > 0 && (
-        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {alerts.map((a: any, i: number) => (
-            <div key={i} style={{ background: 'var(--surface2)', borderRadius: 8, padding: '10px 12px', borderLeft: '3px solid #db6d28' }}>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#db6d28', marginBottom: 3 }}>
-                {a.asset === 'solar_fleet' ? '☀️ Solar Fleet' : '💨 Wind Fleet'} — {a.status.replace(/_/g, ' ')}
+        {/* Wind bar */}
+        <PerformanceBar
+          icon={<Wind className="w-4 h-4 text-cyan-400" />}
+          label="Wind Fleet"
+          actual={wind.actual_mw  || 0}
+          expected={wind.expected_mw || 0}
+        />
+
+        {/* Alert items */}
+        {alerts.length > 0 && (
+          <div className="space-y-2 pt-1 border-t border-slate-800/80">
+            {alerts.map((a: any, i: number) => (
+              <div
+                key={i}
+                className="p-3 rounded-lg bg-orange-950/30 border border-orange-800/40 space-y-1"
+              >
+                <p className="text-xs font-bold text-orange-400 font-mono">
+                  {a.asset === 'solar_fleet' ? '☀️ Solar Fleet' : '💨 Wind Fleet'} — {a.status?.replace(/_/g, ' ')}
+                </p>
+                <p className="text-xs text-slate-300">{a.likely_cause}</p>
+                {a.deficit_mw > 0 && (
+                  <p className="text-xs text-slate-500 font-mono">
+                    Lost revenue:{' '}
+                    <span className="text-red-400 font-bold">${(a.deficit_mw * 50).toLocaleString()}/hr</span>
+                  </p>
+                )}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text)', marginBottom: 4 }}>{a.likely_cause}</div>
-              {a.deficit_mw > 0 && (
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-                  Lost revenue: <b style={{ color: '#f85149' }}>${(a.deficit_mw * 50).toLocaleString()}/hr</b>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {data.total_deficit_mw > 0 && (
-        <div style={{ marginTop: 12, padding: '10px 12px', background: 'rgba(248,81,73,0.08)', borderRadius: 8, border: '1px solid rgba(248,81,73,0.2)', display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-          <span style={{ color: 'var(--muted)' }}>Total generation deficit:</span>
-          <span style={{ fontWeight: 700, color: '#f85149' }}>{data.total_deficit_mw} MW</span>
-        </div>
-      )}
-    </div>
+        {/* Total deficit */}
+        {data.total_deficit_mw > 0 && (
+          <div className="flex items-center justify-between p-3 rounded-lg bg-red-950/30 border border-red-800/40 text-xs font-mono">
+            <span className="text-slate-400">Total generation deficit</span>
+            <span className="text-red-400 font-bold text-sm">{data.total_deficit_mw} MW</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

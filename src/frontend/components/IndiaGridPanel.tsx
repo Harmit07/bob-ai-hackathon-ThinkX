@@ -346,7 +346,7 @@ export default function IndiaGridPanel() {
                 </a>
               </div>
               {Object.entries(capacity.top_solar_states_mw || {}).slice(0, 8).map(([state, mw]: [string, any]) => {
-                const max = Math.max(...Object.values(capacity.top_solar_states_mw || {})) as number
+                const max = Math.max(...(Object.values(capacity.top_solar_states_mw || {}) as number[]))
                 return (
                   <div key={state} style={{ marginBottom: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
@@ -369,7 +369,7 @@ export default function IndiaGridPanel() {
                 </a>
               </div>
               {Object.entries(capacity.top_wind_states_mw || {}).slice(0, 8).map(([state, mw]: [string, any]) => {
-                const max = Math.max(...Object.values(capacity.top_wind_states_mw || {})) as number
+                const max = Math.max(...(Object.values(capacity.top_wind_states_mw || {}) as number[]))
                 return (
                   <div key={state} style={{ marginBottom: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
