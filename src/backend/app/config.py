@@ -1,29 +1,32 @@
-import os
-from pydantic_settings import BaseSettings
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "GridPilot AI - Smart Grid Energy Management Backend"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/gridpilot"
     
-    # Database configuration (defaults to local SQLite if Postgres is not set)
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", "sqlite:///./gridpilot.db"
+    model_config = SettingsConfigDict(
+        env_file=(".env", "/etc/secrets/backend.env"),
+        case_sensitive=True,
+        extra="ignore",
     )
-    
-    CORS_ORIGINS: list[str] = [
-        "http://localhost",
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost:8000",
-        "*"
-    ]
+
+    # DATABASE_URL selects PostgreSQL in production and SQLite locally.
+    DATABASE_URL: str = "sqlite:///./gridpilot.db"
+    CORS_ORIGINS: str = Field(
+        default=(
+            "http://localhost,http://localhost:3000,http://localhost:5173,"
+            "http://localhost:8000,https://bob-ai-hackathon-think-6o8u7folu.vercel.app"
+        )
+    )
     
     # Model parameters
     FORECAST_HORIZON_HOURS: int = 24
     DEFAULT_CARBON_TAX_PER_TON: float = 50.0 # $ per ton CO2
     
-    class Config:
-        case_sensitive = True
+    @property
+    def cors_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
 settings = Settings()

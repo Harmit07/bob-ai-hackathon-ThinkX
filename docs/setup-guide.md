@@ -36,9 +36,9 @@ source .venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Copy environment file
+# Copy environment file (PowerShell: Copy-Item .env.example .env)
 cp .env.example .env
-# Edit .env if needed (optional — app runs without watsonx.ai credentials)
+# Leave DATABASE_URL unset for local SQLite, or set a PostgreSQL URL explicitly.
 
 # Start the backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -47,6 +47,31 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 The backend will be available at: http://localhost:8000
 
 Interactive API docs: http://localhost:8000/docs
+
+For Render, set the service root directory to `src/backend`, build with
+`pip install -r requirements.txt`, and start with
+`uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Set `DATABASE_URL` to the
+Render PostgreSQL internal URL and `CORS_ORIGINS` to the Vercel URL plus any
+local origins needed for development.
+
+### Render Secret File
+
+For plaintext secrets that should be mounted as a file, open the Render
+backend service's **Environment** settings and add a **Secret File** named
+`backend.env`. Render makes it available during builds and runtime at
+`/etc/secrets/backend.env`; the backend loads that file automatically. Use
+dotenv syntax and store only private values there, for example:
+
+```dotenv
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/gridpilot_db
+EIA_API_KEY=your_private_key
+WATSONX_API_KEY=your_private_key
+WATSONX_PROJECT_ID=your_project_id
+```
+
+Do not commit `backend.env`, `.env`, or any private key. Render environment
+variables take precedence over values in the Secret File, so use the Render
+Environment settings for values that should be managed there instead.
 
 > **Note:** On first startup, the ML models (XGBoost + Isolation Forest) train on startup.
 > This takes ~20–30 seconds. Subsequent requests are fast.
@@ -63,15 +88,34 @@ cd src/frontend
 # Install dependencies
 npm install
 
-# Copy environment file
-cp .env.local.example .env.local
-# Default: NEXT_PUBLIC_API_URL=http://localhost:8000 — no changes needed
+# Copy environment file (PowerShell: Copy-Item .env.example .env.local)
+cp .env.example .env.local
+# Local defaults use SQLite-backed FastAPI and explicit mock mode.
 
 # Start the frontend development server
 npm run dev
 ```
 
 The dashboard will be available at: http://localhost:3000
+
+For Vercel, set the root directory to `src/frontend`, use the Next.js preset,
+and set `NEXT_PUBLIC_API_URL=https://bob-ai-hackathon-thinkx.onrender.com` and
+`NEXT_PUBLIC_USE_MOCK_DATA=false`.
+
+## SQLite to PostgreSQL migration
+
+The local SQLite file is `src/backend/gridpilot.db`. After creating the Render
+PostgreSQL service, run this from `src/backend` with the destination URL in
+the environment. The script creates missing tables, preserves primary keys,
+skips existing primary keys on repeat runs, and never truncates PostgreSQL:
+
+```bash
+set DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/gridpilot_db
+python scripts/migrate_sqlite_to_postgres.py --sqlite-path gridpilot.db
+```
+
+On PowerShell, use `$env:DATABASE_URL="..."` instead of `set` and do not put
+the real URL in Git.
 
 ---
 
@@ -130,4 +174,4 @@ WATSONX_MODEL_ID=ibm/granite-13b-instruct-v2
 | `Cannot reach API` error in dashboard | Ensure backend is running on port 8000 |
 | Frontend won't start | Run `npm install` first |
 | Slow first API response | ML models train on startup — wait 30s |
-| CORS error | Backend already has `allow_origins=["*"]` configured |
+| CORS error | Check `CORS_ORIGINS` includes the exact frontend origin |

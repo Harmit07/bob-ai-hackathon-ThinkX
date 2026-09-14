@@ -50,6 +50,10 @@ def seed_database(db: Session):
                 db.add(node)
             db.commit()
             print(f"Seeded {len(unique_assets)} real grid assets from data/assets.csv.")
+        else:
+            db.add_all([GridNode(**node) for node in SEED_NODES])
+            db.commit()
+            print(f"Seeded {len(SEED_NODES)} default grid assets.")
 
     # Telemetry seed from data/asset_telemetry.csv
     telemetry_count = db.query(TelemetryRecord).count()
@@ -86,6 +90,25 @@ def seed_database(db: Session):
         db.bulk_save_objects(telemetry_objs)
         db.commit()
         print(f"Seeded {len(telemetry_objs)} telemetry records from data/asset_telemetry.csv.")
+    elif telemetry_count == 0:
+        default_telemetry = [
+            TelemetryRecord(
+                timestamp=datetime.utcnow() - timedelta(minutes=index * 5),
+                node_id=node["id"],
+                power_mw=node["max_capacity_mw"] * 0.6,
+                voltage_pu=1.0,
+                frequency_hz=60.0,
+                solar_irradiance=0.0,
+                wind_speed=0.0,
+                temperature=25.0,
+                congestion_flag=False,
+                anomaly_score=0.0,
+            )
+            for index, node in enumerate(SEED_NODES)
+        ]
+        db.add_all(default_telemetry)
+        db.commit()
+        print(f"Seeded {len(default_telemetry)} default telemetry records.")
 
 if __name__ == "__main__":
     init_db()

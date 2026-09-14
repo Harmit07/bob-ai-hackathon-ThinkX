@@ -30,6 +30,10 @@ import {
 
 export const useMockData = USE_MOCK_DATA_DEFAULT;
 
+function rethrowInProduction(error: unknown): void {
+  if (!useMockData) throw error;
+}
+
 async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
   if (useMockData) {
     throw new Error('Using mock data mode');
@@ -62,6 +66,7 @@ export async function getGridStatus(): Promise<GridStatus> {
       last_updated: res.timestamp || new Date().toISOString(),
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getGridStatus, falling back to mock:', err);
     return goldenGridStatus;
   }
@@ -86,6 +91,7 @@ export async function getGridStress(): Promise<GridStress> {
       ],
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getGridStress, falling back to mock:', err);
     return goldenGridStress;
   }
@@ -111,6 +117,7 @@ export async function getDemandForecast() {
     }));
     return { summary, forecast, metrics: res.metrics };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getDemandForecast, falling back to mock:', err);
     return { summary: goldenDemandSummary, forecast: goldenDemandForecastPoints };
   }
@@ -158,6 +165,7 @@ export async function getRenewableForecast() {
       forecast: goldenRenewableForecastPoints,
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getRenewableForecast, falling back to mock:', err);
     return {
       summary: goldenRenewableSummary,
@@ -192,6 +200,7 @@ export async function getAssets(): Promise<GridAsset[]> {
     }
     return goldenAssetsList;
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getAssets, falling back to mock:', err);
     return goldenAssetsList;
   }
@@ -219,6 +228,7 @@ export async function getAsset(assetId: string): Promise<GridAsset> {
       status: (a.status || 'DEGRADED') as any,
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for getAsset(${assetId}), falling back to mock:`, err);
     if (assetId === 'SOLAR_B17') return goldenCriticalAsset;
     return goldenCriticalAsset;
@@ -246,6 +256,7 @@ export async function getAssetTelemetry(assetId: string): Promise<AssetTelemetry
       irradiance_w_m2: 850.0,
     }));
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for getAssetTelemetry(${assetId}):`, err);
     return [];
   }
@@ -272,6 +283,7 @@ export async function getAnomalies(): Promise<AnomalyItem[]> {
       lost_mw: 23,
     }));
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getAnomalies, falling back to mock:', err);
     return goldenAnomalies;
   }
@@ -299,6 +311,7 @@ export async function getRCA(assetId: string): Promise<RootCauseAnalysis> {
       recommended_mitigation: (res.mitigation || []).join('; '),
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for getRCA(${assetId}), falling back to mock:`, err);
     return goldenRCA;
   }
@@ -317,6 +330,7 @@ export async function getCurtailmentRisk(): Promise<CurtailmentSummary> {
       probability_pct: Math.round((res.probability || 0.83) * 100),
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getCurtailmentRisk, falling back to mock:', err);
     return goldenCurtailmentSummary;
   }
@@ -364,6 +378,7 @@ export async function runOptimization(data?: any): Promise<OptimizationResponse>
       scenarios: goldenOptimizationResponse.scenarios,
     };
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for runOptimization, falling back to mock:', err);
     return goldenOptimizationResponse;
   }
@@ -392,6 +407,7 @@ export async function runSimulation(params: SimulationParams): Promise<Simulatio
       };
     }
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for runSimulation, using simulation fallback:', err);
   }
 
@@ -442,6 +458,7 @@ export async function getRecommendations(): Promise<RecommendationAction[]> {
       status: r.status as any,
     }));
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getRecommendations, falling back to mock:', err);
     return goldenRecommendations;
   }
@@ -455,6 +472,7 @@ export async function approveRecommendation(id: string) {
       return { success: true, message: res.message || 'Simulation approved — no physical grid equipment was controlled.' };
     }
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for approveRecommendation(${id}):`, err);
   }
   return { success: true, message: 'Simulation approved — no physical grid equipment was controlled.' };
@@ -468,6 +486,7 @@ export async function rejectRecommendation(id: string) {
       return { success: true, message: res.message || `Recommendation ${id} rejected.` };
     }
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for rejectRecommendation(${id}):`, err);
   }
   return { success: true, message: `Recommendation ${id} rejected.` };
@@ -484,6 +503,7 @@ export async function modifyRecommendation(id: string, amount_mw: number) {
       return { success: true, message: res.message || `Recommendation ${id} modified to ${amount_mw} MW.` };
     }
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for modifyRecommendation(${id}):`, err);
   }
   return { success: true, message: `Recommendation ${id} modified to ${amount_mw} MW.` };
@@ -495,6 +515,7 @@ export async function getUnderperformance(): Promise<any> {
     if (useMockData) return null;
     return await fetchAPI<any>('/api/underperformance/');
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getUnderperformance, returning null:', err);
     return null;
   }
@@ -506,6 +527,7 @@ export async function getFinancialImpact(): Promise<any> {
     if (useMockData) return null;
     return await fetchAPI<any>('/api/financial/');
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getFinancialImpact, returning null:', err);
     return null;
   }
@@ -518,6 +540,7 @@ export async function getHITLQueue(status?: string): Promise<any> {
     const qs = status ? `?status=${status}` : '';
     return await fetchAPI<any>(`/api/hitl/queue${qs}`);
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getHITLQueue, returning empty queue:', err);
     return { queue: [], summary: { pending: 0, approved: 0, rejected: 0, deferred: 0 } };
   }
@@ -529,6 +552,7 @@ export async function refreshHITLQueue(): Promise<any> {
     if (useMockData) return { submitted: [], count: 0 };
     return await fetchAPI<any>('/api/hitl/queue/refresh', { method: 'POST' });
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for refreshHITLQueue:', err);
     return { submitted: [], count: 0 };
   }
@@ -543,6 +567,7 @@ export async function reviewHITLAction(id: string, decision: string, reviewed_by
       body: JSON.stringify({ decision, reviewed_by, notes }),
     });
   } catch (err) {
+    rethrowInProduction(err);
     console.warn(`API fetch failed for reviewHITLAction(${id}):`, err);
     return { success: false };
   }
@@ -559,6 +584,7 @@ export async function getOperatorBrief(): Promise<string> {
     }
     return goldenOperatorBriefMarkdown;
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for getOperatorBrief, falling back to mock:', err);
     return goldenOperatorBriefMarkdown;
   }
@@ -570,6 +596,7 @@ export async function runGridPilotAnalysis() {
     if (useMockData) return goldenOptimizationResponse;
     return await fetchAPI('/api/gridpilot/analyze', { method: 'POST' });
   } catch (err) {
+    rethrowInProduction(err);
     console.warn('API fetch failed for runGridPilotAnalysis, falling back to mock:', err);
     return goldenOptimizationResponse;
   }
