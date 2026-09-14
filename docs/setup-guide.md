@@ -53,6 +53,8 @@ For Render, set the service root directory to `src/backend`, build with
 `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Set `DATABASE_URL` to the
 Render PostgreSQL internal URL and `CORS_ORIGINS` to the Vercel URL plus any
 local origins needed for development.
+Include the exact deployed frontend origin
+`https://bob-ai-hackathon-think-x.vercel.app` in `CORS_ORIGINS`.
 
 ### Render Secret File
 

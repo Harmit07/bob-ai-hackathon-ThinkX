@@ -19,7 +19,8 @@ class Settings(BaseSettings):
             "http://localhost,http://localhost:3000,http://localhost:5173,"
             "http://localhost:8000,"
             "https://bob-ai-hackathon-think-6o8u7folu.vercel.app,"
-            "https://bob-ai-hackathon-think-cs5rhl40v.vercel.app"
+            "https://bob-ai-hackathon-think-cs5rhl40v.vercel.app,"
+            "https://bob-ai-hackathon-think-x.vercel.app"
         )
     )
     
