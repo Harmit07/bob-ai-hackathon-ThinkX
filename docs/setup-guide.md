@@ -101,6 +101,9 @@ The dashboard will be available at: http://localhost:3000
 For Vercel, set the root directory to `src/frontend`, use the Next.js preset,
 and set `NEXT_PUBLIC_API_URL=https://bob-ai-hackathon-thinkx.onrender.com` and
 `NEXT_PUBLIC_USE_MOCK_DATA=false`.
+After changing Vercel environment variables, redeploy so Next.js rebuilds the
+browser bundle. Do not leave `NEXT_PUBLIC_API_URL=http://localhost:8000` in
+Vercel; that address points to the visitor's own computer, not Render.
 
 ## SQLite to PostgreSQL migration
 
@@ -109,6 +112,11 @@ PostgreSQL service, run this from `src/backend` with the destination URL in
 the environment. The script creates missing tables, preserves primary keys,
 skips existing primary keys on repeat runs, and never truncates PostgreSQL:
 
+When running the command on your own computer, use Render's **External
+Database URL**. Render's **Internal Database URL** uses a private hostname
+such as `dpg-...` and only resolves from another Render service or Render
+Shell.
+
 ```bash
 set DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/gridpilot_db
 python scripts/migrate_sqlite_to_postgres.py --sqlite-path gridpilot.db
@@ -116,6 +124,10 @@ python scripts/migrate_sqlite_to_postgres.py --sqlite-path gridpilot.db
 
 On PowerShell, use `$env:DATABASE_URL="..."` instead of `set` and do not put
 the real URL in Git.
+
+Alternatively, run the same command from a Render Shell attached to the
+backend service; there the Internal Database URL is reachable. Never commit
+either database URL because both contain credentials.
 
 ---
 
