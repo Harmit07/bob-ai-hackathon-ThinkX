@@ -2,39 +2,9 @@
 
 ## System Overview
 
-```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                             GRIDPILOT AI SYSTEM                              │
-│                                                                              │
-│  ┌───────────────────────┐       ┌────────────────────────────────────────┐ │
-│  │   NEXT.JS FRONTEND    │◀─────▶│          FASTAPI BACKEND               │ │
-│  │  (App Router + RQ)    │ REST  │          (port 8000)                   │ │
-│  │                       │       │                                        │ │
-│  │  /dashboard           │       │  ┌───────────┐  ┌────────────────────┐ │ │
-│  │  /anomalies           │       │  │ ML Engine │  │ Optimization       │ │ │
-│  │  /assets/[id]         │       │  │ XGBoost   │  │ OR-Tools LP solver │ │ │
-│  │  /forecasts           │       │  │ IsoForest │  │ + greedy fallback  │ │ │
-│  │  /optimization        │       │  │ RCA Engine│  └────────────────────┘ │ │
-│  │  /recommendations     │       │  │ Grid Stress   ┌────────────────────┐ │ │
-│  │  /simulation          │       │  └───────────┘  │ Services Layer     │ │ │
-│  └───────────────────────┘       │  ┌───────────┐  │ Financial Impact   │ │ │
-│                                  │  │ SQLAlchemy│  │ HITL Approval      │ │ │
-│                                  │  │  DB Layer │  │ Operator Brief     │ │ │
-│                                  │  │(SQLite/PG)│  │ Scenario Simulator │ │ │
-│                                  │  └───────────┘  │ Event Predictor    │ │ │
-│                                  │                  └────────────────────┘ │ │
-│                                  └────────────────────────────────────────┘ │
-│                                                │                             │
-│                                   ┌────────────▼───────────┐                │
-│                                   │  watsonx.ai            │                │
-│                                   │  IBM Granite LLM       │                │
-│                                   │  (integration-ready    │                │
-│                                   │   stub in operator     │                │
-│                                   │   brief module)        │                │
-│                                   └────────────────────────┘                │
-└──────────────────────────────────────────────────────────────────────────────┘
-```
+## Architecture
 
+![Architecture](https://github.com/user-attachments/assets/e4417522-79bf-475c-8d20-455f2541c522)
 ---
 
 ## Backend Components
