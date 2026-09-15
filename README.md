@@ -11,18 +11,20 @@
 | **Team Name** | ThinkX |
 | **Track** | Sustainability |
 | **Project Name** | GridPilot AI |
+| **Lead** | Harmit Jetani ([23dcs040@charusat.edu.in](mailto:23dcs040@charusat.edu.in)) |
+| **Members** | James Dhandhukiya, Kashish Gandhi, Prince Ghevariya |
 
 ---
 
 ## 🎯 Problem Statement
 
-Modern power grids face severe operational complexity driven by the rapid proliferation of variable renewable energy (solar & wind), rising and unpredictable electricity demand, transmission congestion, and renewable curtailment. Grid operators lack real-time AI-powered decision support — resulting in wasted clean energy, grid instability, and costly reactive responses instead of proactive management.
+Grid operators must balance variable solar and wind generation against changing demand, transmission congestion, reserve requirements, and renewable curtailment. Without timely decision support, operators face grid instability, wasted clean energy, and expensive reactive interventions. GridPilot AI is designed for the operators who need one place to detect, explain, and respond to those conditions.
 
 ---
 
 ## 💡 Solution
 
-**GridPilot AI** is a full-stack intelligent grid management platform that brings together ML-based forecasting, anomaly detection, LP-style dispatch optimization, financial impact analysis, and a Human-in-the-Loop (HITL) approval workflow — all surfaced through a polished real-time operator dashboard.
+**GridPilot AI** is a full-stack intelligent grid management platform that combines XGBoost forecasting, Isolation Forest anomaly detection, Google OR-Tools dispatch optimization, financial impact analysis, and a Human-in-the-Loop approval workflow. A FastAPI backend serves simulated grid telemetry and analysis APIs to a Next.js operator dashboard, where recommendations can be reviewed before approval.
 
 **Tagline:** *Predict the problem. Explain the cause. Optimize the response.*
 
@@ -30,19 +32,11 @@ Modern power grids face severe operational complexity driven by the rapid prolif
 
 ## ✨ Key Features
 
-- **Real-time Grid Status Dashboard:** Live KPI banner with grid health, frequency, reserve margin, renewable mix, and curtailment
-- **Demand & Renewable Forecasting:** XGBoost models predicting demand, solar, and wind output for the next 24 hours with curtailment risk scoring
-- **Anomaly Detection:** Isolation Forest + rule-based engine detecting demand spikes, frequency deviations, low reserves, and high curtailment — with severity classification
-- **Asset Management & Root Cause Analysis:** Per-asset telemetry, underperformance detection, and structured RCA (symptom → cause → contributing factors → immediate action)
-- **Grid Stress Scoring:** Multi-factor stress index with driver breakdown and trend tracking
-- **Google OR-Tools Optimization:** Unit commitment and dispatch optimization using linear programming; greedy dispatch fallback
-- **What-If Scenario Simulator:** Interactive scenario modelling — adjust solar capacity, demand, storage, or tariffs and preview dispatch outcomes
-- **Financial Impact Engine:** Real-time cost/revenue tracking — curtailment losses, carbon tax, congestion charges, renewable revenue
-- **Human-in-the-Loop (HITL) Approval Queue:** Operator review and approve/reject/modify AI-generated dispatch actions before execution
-- **AI Operator Executive Brief:** Auto-generated natural-language markdown briefing summarizing current grid state and recommended actions (watsonx.ai-ready)
-- **Next-Best-Action Engine:** Priority-ranked operator action recommendations with one-click HITL workflow integration
-- **India Grid Module:** Region-specific parameters, load profiles, and renewable data for Indian grid zones
-- **Event Predictor:** Forecasts upcoming grid stress events (peak demand, curtailment windows, frequency risks)
+- **Live grid operations dashboard:** KPI monitoring for grid health, frequency, reserve margin, renewable mix, curtailment, stress drivers, and financial impact.
+- **24-hour ML forecasting:** XGBoost demand and renewable forecasts with curtailment-risk scoring for solar and wind.
+- **Explainable detection and RCA:** Isolation Forest and rule-based checks identify anomalies, asset underperformance, and likely root causes.
+- **Optimized and reviewable dispatch:** Google OR-Tools dispatch optimization feeds priority-ranked recommendations into the HITL approve/reject/modify workflow.
+- **Scenario and regional analysis:** Operators can test changes to demand, solar, storage, and tariffs, while the India Grid module provides region-specific parameters.
 
 ---
 
@@ -51,15 +45,11 @@ Modern power grids face severe operational complexity driven by the rapid prolif
 | Category | Technologies |
 |---|---|
 | **Languages** | Python 3.11+, TypeScript |
-| **Backend Framework** | FastAPI, uvicorn, SQLAlchemy |
-| **Frontend Framework** | Next.js 16, React 19, Tailwind CSS v4 |
-| **ML / AI** | XGBoost, scikit-learn (Isolation Forest), rule-based RCA engine |
-| **Optimization** | Google OR-Tools (linear programming unit commitment) |
-| **Database** | SQLite (dev) / PostgreSQL-compatible via SQLAlchemy |
-| **Visualization** | ECharts, echarts-for-react, Recharts |
-| **State Management** | TanStack React Query |
-| **IBM Technologies** | IBM Bob (AI-assisted development), watsonx.ai (integration-ready for Operator Brief) |
-| **Other** | pandas, numpy, pydantic v2, python-dotenv, axios, lucide-react |
+| **Backend** | FastAPI, Uvicorn, SQLAlchemy 2.0, Pydantic v2 |
+| **Frontend** | Next.js 16, React 19, Tailwind CSS v4 |
+| **ML and optimization** | XGBoost, scikit-learn Isolation Forest, Google OR-Tools, pandas, NumPy |
+| **Data and visualization** | SQLite, PostgreSQL-compatible SQLAlchemy, ECharts, Recharts, TanStack React Query |
+| **IBM technologies** | IBM Bob for AI-assisted development; watsonx.ai and IBM Granite integration hook for the Operator Brief |
 
 ---
 
@@ -141,20 +131,48 @@ Modern power grids face severe operational complexity driven by the rapid prolif
 
 > **See [`docs/setup-guide.md`](docs/setup-guide.md) for full step-by-step instructions.**
 
-```bash
-# Backend (Terminal 1)
-cd src/backend
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # macOS/Linux
-pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+**Backend (Terminal 1):**
 
-# Frontend (Terminal 2)
+```bash
+cd src/backend
+
+# Create a virtual environment
+python -m venv .venv
+
+# Activate the virtual environment
+# Windows (PowerShell):
+.venv\Scripts\activate
+# macOS / Linux:
+# source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Copy the environment file (optional — app runs without watsonx.ai credentials)
+cp .env.example .env
+
+# Start the backend server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**Frontend (Terminal 2):**
+
+```bash
 cd src/frontend
+
+# Install dependencies
 npm install
+
+# Copy the environment file
+cp .env.local.example .env.local
+# Default: NEXT_PUBLIC_API_URL=http://localhost:8000
+# No changes needed for local development
+
+# Start the development server
 npm run dev
 ```
+
+For the full setup, optional watsonx.ai/PostgreSQL configuration, and test command, see [docs/setup-guide.md](docs/setup-guide.md).
 
 | Service | URL |
 |---|---|
@@ -168,21 +186,24 @@ npm run dev
 
 | Artifact | Link |
 |---|---|
-| 📹 Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
-| 🖼️ Screenshots | [See demo/screenshots/](demo/screenshots/) |
-| 📊 Presentation | [See presentation/](presentation/) |
+| Live demo | [bob-ai-hackathon-think-x.vercel.app](https://bob-ai-hackathon-think-x.vercel.app) |
+| Demo video | Not available yet; see [demo/demo-video-link.txt](demo/demo-video-link.txt) |
+| Screenshots | Not available yet; see [demo/screenshots/](demo/screenshots/) |
+| Presentation | [presentation/](presentation/) |
+| Architecture | [docs/architecture.md](docs/architecture.md) |
 
 ---
 
 ## ⚠️ Known Limitations
 
-- Grid data is simulated — not connected to live EIA/NOAA/NREL APIs (integration path documented in [`docs/architecture.md`](docs/architecture.md))
-- Operator Brief uses rule-based narrative generation — watsonx.ai IBM Granite integration is stubbed and ready to connect
-- No authentication layer — designed for hackathon demo purposes
-- SQLite is used by default; switch to PostgreSQL via `DATABASE_URL` environment variable
+- Grid data is simulated and is not yet connected to live EIA, NOAA, NREL, or SCADA feeds; the production integration path is documented in [docs/architecture.md](docs/architecture.md).
+- The Operator Brief currently uses rule-based narrative generation. The watsonx.ai IBM Granite integration hook is ready but requires credentials and project configuration.
+- The frontend can fall back to mock data when the backend is unavailable, so local and deployed data may not represent live grid conditions.
+- There is no authentication or authorization layer; this is a hackathon demonstration.
+- SQLite is the default database. PostgreSQL is supported through `DATABASE_URL` but has not been the default deployment configuration.
 
 ---
 
 ## 🏅 What We're Most Proud Of
 
-The depth and breadth of the end-to-end platform: from raw simulated telemetry → ML anomaly detection → OR-Tools dispatch optimization → financial impact quantification → HITL approval workflow → AI-generated operator briefing. Each layer is independently useful and production-extensible. The architecture cleanly separates ML inference, optimization, and advisory layers so any component can be upgraded with live data or a real LLM without touching the others.
+Our strongest work is the end-to-end operator workflow visible in the [live dashboard](https://bob-ai-hackathon-think-x.vercel.app): simulated telemetry becomes forecasts and anomaly alerts, alerts receive structured root-cause analysis, OR-Tools produces a dispatch plan, financial impact is quantified, and recommendations enter a human approval queue. The [architecture documentation](docs/architecture.md) shows how the ML, optimization, advisory, and API layers are separated so live data or a production LLM can be added without redesigning the operator experience.
