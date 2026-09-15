@@ -1,57 +1,79 @@
 team:
-  name: "THINKX"
+  name: "ThinkX"
   track: "Sustainability"
   lead:
-    name: "ThinkX Lead"
-    email: "thinkx.lead@example.com"
+    name: "Harmit Jetani"
+    email: "23dcs040@charusat.edu.in"
   members:
-    - name: ""
-      email: ""
-    - name: ""
-      email: ""
-    - name: ""
-      email: ""
+    - name: "James Dhandhukiya"
+      email: "23dcs023@charusat.edu.in"
+    - name: "Kashish Gandhi"
+      email: "23dcs028@charusat.edu.in"
+    - name: "Prince Ghevariya"
+      email: "23dcs033@charusat.edu.in"
 
 submission:
-  title: "AI-Powered Grid Load Optimization & Renewable Energy Performance Advisor"
+  title: "GridPilot AI — Smart Grid Energy Management Platform"
 
   problem_statement: >
-    Modern power grids face increasing operational complexity due to variable renewable energy
-    growth, sudden demand spikes, transmission constraints, and renewable curtailment. Grid
-    operators lack real-time AI-powered decision support, resulting in wasted clean energy and
-    grid instability.
+    Modern power grids face severe operational complexity driven by the rapid proliferation
+    of variable renewable energy (solar & wind), rising and unpredictable electricity demand,
+    transmission congestion, and renewable curtailment. Grid operators lack real-time
+    AI-powered decision support — resulting in wasted clean energy, grid instability, and
+    costly reactive responses instead of proactive management.
 
   solution_summary: >
-    We built a full-stack AI advisor that combines XGBoost load forecasting, Isolation Forest
-    anomaly detection, and a greedy optimization engine with LLM-ready Root Cause Analysis.
-    The system monitors grid conditions in real-time, predicts the next 24 hours, detects
-    anomalies, and delivers actionable natural-language recommendations to grid operators.
-    Tagline: Predict the problem. Explain the cause. Optimize the response.
+    GridPilot AI is a full-stack intelligent grid management platform that combines XGBoost
+    ML forecasting, Isolation Forest anomaly detection, Google OR-Tools linear programming
+    dispatch optimization, financial impact analysis, and a Human-in-the-Loop (HITL) approval
+    workflow — all surfaced through a polished real-time operator dashboard. An AI Operator
+    Executive Brief (watsonx.ai-ready) synthesizes grid state into natural-language operator
+    guidance. Tagline: Predict the problem. Explain the cause. Optimize the response.
 
   key_features:
-    - "Real-time grid monitoring: demand, solar, wind, frequency, reserve margin, curtailment"
-    - "24-hour load and renewable forecasting using XGBoost with curtailment risk scoring"
-    - "Anomaly detection using Isolation Forest + rule-based engine (demand spikes, frequency deviations, low reserves)"
-    - "Greedy dispatch optimization with storage charging and load-shifting recommendations"
-    - "AI Root Cause Analysis advisor with structured RCA narrative (watsonx.ai integration-ready)"
+    - "Real-time grid status dashboard: live KPI banner with health score, frequency, reserve margin, renewable mix, curtailment"
+    - "Demand and renewable 24-hour forecasting using XGBoost with curtailment risk scoring"
+    - "Anomaly detection using Isolation Forest + rule-based engine (demand spikes, frequency deviations, low reserves, high curtailment)"
+    - "Asset management with per-asset telemetry, underperformance detection, and Root Cause Analysis"
+    - "Multi-factor grid stress scoring with driver breakdown and trend tracking"
+    - "Google OR-Tools linear programming unit commitment and dispatch optimization"
+    - "What-if scenario simulator: adjust solar capacity, demand, storage, tariffs and preview outcomes"
+    - "Financial impact engine: curtailment losses, carbon tax, congestion charges, renewable revenue"
+    - "Human-in-the-Loop (HITL) approval queue: operators approve, reject, or modify AI dispatch actions"
+    - "AI Operator Executive Brief: auto-generated natural-language markdown briefing (watsonx.ai IBM Granite integration-ready)"
+    - "Next-best-action engine: priority-ranked operator recommendations with HITL workflow integration"
+    - "India grid module: region-specific load profiles, renewable parameters, and grid zones"
+    - "Event predictor: forecasts upcoming grid stress events (peak demand windows, curtailment risk)"
 
   tech_stack:
-    languages: ["Python", "TypeScript"]
-    frameworks: ["FastAPI", "Next.js", "React"]
-    ibm_technologies: ["IBM Bob", "watsonx.ai (integration-ready)"]
-    databases: []
-    other: ["XGBoost", "scikit-learn", "ECharts", "Tailwind CSS", "pandas", "numpy", "uvicorn"]
+    languages: ["Python 3.11+", "TypeScript"]
+    frameworks: ["FastAPI", "Next.js 16", "React 19", "Tailwind CSS v4", "SQLAlchemy"]
+    ibm_technologies: ["IBM Bob (AI-assisted development)", "watsonx.ai (integration-ready for Operator Brief narrative generation)"]
+    databases: ["SQLite (dev)", "PostgreSQL (production-compatible via SQLAlchemy)"]
+    other:
+      - "XGBoost (demand and renewable forecasting)"
+      - "scikit-learn Isolation Forest (anomaly detection)"
+      - "Google OR-Tools (linear programming dispatch optimization)"
+      - "pandas, numpy"
+      - "pydantic v2, pydantic-settings"
+      - "TanStack React Query"
+      - "ECharts, echarts-for-react, Recharts"
+      - "lucide-react, axios"
+      - "uvicorn"
 
   what_we_are_most_proud_of: >
-    The end-to-end advisory pipeline: raw grid telemetry → ML anomaly detection →
-    optimization recommendations → human-readable Root Cause Analysis narrative,
-    all in a single API call (GET /api/advisor/). The architecture is production-realistic
-    and directly extensible with live EIA/NOAA/NREL data sources and watsonx.ai LLM.
+    The depth and breadth of the end-to-end platform: from raw simulated telemetry →
+    ML anomaly detection → OR-Tools dispatch optimization → financial impact quantification →
+    HITL approval workflow → AI-generated operator briefing. Each layer is independently
+    useful and production-extensible. The architecture cleanly separates ML inference,
+    optimization, and advisory concerns so any component can be upgraded with live data
+    or a real LLM without touching the others.
 
   known_limitations: >
-    Grid data is simulated (live API integration path is documented). LLM narrative
-    uses rule-based RCA — watsonx.ai is stubbed and ready for connection. No authentication
-    layer. Optimization uses greedy dispatch; production would use Pyomo/OR-Tools LP solver.
+    Grid data is simulated — live EIA/NOAA/NREL API integration path is documented in
+    docs/architecture.md. Operator Brief uses rule-based narrative generation; watsonx.ai
+    IBM Granite is stubbed and ready to connect. No authentication layer (hackathon demo).
+    SQLite used by default; switch to PostgreSQL via DATABASE_URL environment variable.
 
 artifacts:
   source_code: "src/"
