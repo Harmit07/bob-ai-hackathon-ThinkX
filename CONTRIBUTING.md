@@ -119,9 +119,9 @@ Saved model artefacts are in `src/backend/app/ml_engine/saved_models/` and are c
 - [x] `docs/setup-guide.md` — completed
 - [x] `src/` — full source code committed (no `node_modules`, no `.env`)
 - [ ] `demo/demo-video-link.txt` — add real video URL (3–5 min demo)
-- [ ] `demo/live-demo-url.txt` — add deployed URL or write "NOT DEPLOYED"
-- [ ] `demo/screenshots/` — add 3+ screenshots of the running app
-- [ ] `presentation/slides.pdf` — add slide deck
+- [x] `demo/live-demo-url.txt` — add deployed URL or write "NOT DEPLOYED"
+- [x] `demo/screenshots/` — add 3+ screenshots of the running app
+- [x] `presentation/slides.pdf` — add slide deck
 - [ ] GitHub Actions **✅ Validate Submission** is green
-- [ ] Repository is **Public**
+- [x] Repository is **Public**
 - [ ] Entry form submitted before the deadline
