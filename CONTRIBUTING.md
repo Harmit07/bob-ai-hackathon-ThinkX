@@ -1,117 +1,127 @@
-# How to Submit Your Hackathon Entry
+# Contributing & Submission Guide
 
-Follow these steps to set up your submission repository correctly.
-The judges depend on this structure to review your entry — deviations may affect your score.
-
----
-
-## Step 1 — Fork This Template
-
-1. Click the **"Use this template"** button at the top of this repository
-   (or **Fork** if you prefer)
-2. Name your repository: `bob-ai-hackathon-[your-team-name]`
-   (e.g., `bob-ai-hackathon-orion-squad`)
-3. Set visibility to **Public** so judges can access it
-4. Click **Create repository**
+This repository is the hackathon submission for **Team ThinkX — GridPilot AI**.
 
 ---
 
-## Step 2 — Clone Your Fork Locally
+## Repository Layout
 
-```bash
-git clone https://github.com/[your-org]/bob-ai-hackathon-[your-team-name].git
-cd bob-ai-hackathon-[your-team-name]
+```
+bob-ai-hackathon-ThinkX/
+├── src/
+│   ├── backend/          # FastAPI Python backend (GridPilot AI API)
+│   └── frontend/         # Next.js 16 + React 19 operator dashboard
+├── docs/
+│   ├── problem-statement.md
+│   ├── solution-overview.md
+│   ├── architecture.md
+│   └── setup-guide.md
+├── demo/                 # Video link, live demo URL, screenshots
+├── presentation/         # Slide deck
+├── submission.yaml       # Submission metadata (judges read this first)
+└── README.md
 ```
 
 ---
 
-## Step 3 — Fill in the Required Files
+## For Judges
 
-Work through these files in order:
+Everything you need to evaluate this submission:
 
-### 3a. `submission.yaml` ← **Start here**
-This is the most important file. Judges use it to get an overview of your entry.
-
-- Open [`submission.yaml`](submission.yaml)
-- Fill in **every field marked `# REQUIRED`**
-- Read the inline comments — they explain what each field expects
-
-### 3b. `README.md`
-- Replace every `[placeholder in brackets]` with your actual content
-
-### 3c. `docs/`
-Fill in all four documentation files:
-| File | What to write |
+| What | Where |
 |---|---|
-| [`docs/problem-statement.md`](docs/problem-statement.md) | The problem you're solving |
-| [`docs/solution-overview.md`](docs/solution-overview.md) | How your solution works |
-| [`docs/architecture.md`](docs/architecture.md) | Technical architecture diagram |
-| [`docs/setup-guide.md`](docs/setup-guide.md) | Exact steps to run your project |
-
-### 3d. `src/`
-- Put all your source code inside [`src/`](src/)
-- Copy [`src/.env.example`](src/.env.example) and add your environment variables to it
-- **Never commit a real `.env` file** — it is already in `.gitignore`
-
-### 3e. `demo/`
-| File | What to do |
-|---|---|
-| [`demo/demo-video-link.txt`](demo/demo-video-link.txt) | Replace placeholder URL with your real video link |
-| [`demo/live-demo-url.txt`](demo/live-demo-url.txt) | Add your deployed demo URL (or write "NOT DEPLOYED") |
-| [`demo/screenshots/`](demo/screenshots/) | Add 3+ screenshots named `01-*.png`, `02-*.png`, etc. |
-
-### 3f. `presentation/`
-- Add your slide deck as [`presentation/slides.pdf`](presentation/) (preferred) or `.pptx`
+| **Project summary** | [`submission.yaml`](submission.yaml) |
+| **Problem & solution** | [`docs/problem-statement.md`](docs/problem-statement.md) · [`docs/solution-overview.md`](docs/solution-overview.md) |
+| **Architecture** | [`docs/architecture.md`](docs/architecture.md) |
+| **How to run** | [`docs/setup-guide.md`](docs/setup-guide.md) |
+| **Demo video** | [`demo/demo-video-link.txt`](demo/demo-video-link.txt) |
+| **Live demo** | [`demo/live-demo-url.txt`](demo/live-demo-url.txt) |
+| **Screenshots** | [`demo/screenshots/`](demo/screenshots/) |
+| **Presentation** | [`presentation/`](presentation/) |
+| **Source code** | [`src/`](src/) |
 
 ---
 
-## Step 4 — Verify Your Submission Passes Validation
+## Running the Project
 
-Every push to your repository triggers the **Validate Submission** GitHub Action automatically.
+See [`docs/setup-guide.md`](docs/setup-guide.md) for full instructions. Quick start:
 
-To check manually:
-1. Go to your repo on GitHub
-2. Click the **Actions** tab
-3. Look for **✅ Validate Submission**
-4. A green checkmark means your submission is structurally complete
-5. A red X means something is missing — click the run to see what
-
-You can also run the validation locally:
 ```bash
-# Install yq first: https://github.com/mikefarah/yq#install
-yq '.' submission.yaml   # checks YAML is valid
+# Backend
+cd src/backend
+python -m venv .venv && .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+
+# Frontend (new terminal)
+cd src/frontend
+npm install && npm run dev
 ```
 
----
-
-## Step 5 — Submit Your Repository URL
-
-Once validation passes:
-
-1. Copy your repository URL:
-   `https://github.com/[your-org]/bob-ai-hackathon-[your-team-name]`
-
-2. Submit it via the **official entry form** at:
-   `[ORGANIZER: INSERT FORM URL HERE]`
-
-3. **Deadline:** `[ORGANIZER: INSERT DEADLINE HERE]`
-
-> ⚠️ Submissions after the deadline will not be reviewed.
-> Changes after the deadline are not considered — make sure everything is complete before submitting.
+Open http://localhost:3000 for the dashboard · http://localhost:8000/docs for the API.
 
 ---
 
-## Checklist Before You Submit
+## For Contributors (Team ThinkX)
 
-- [ ] `submission.yaml` — all required fields filled
-- [ ] `README.md` — no `[placeholder]` text remaining
-- [ ] `docs/setup-guide.md` — someone else can run your project using these instructions
-- [ ] `src/` — all source code committed (no `node_modules`, no `.env`)
-- [ ] `demo/demo-video-link.txt` — real video URL (3–5 min showing the app working)
-- [ ] `demo/screenshots/` — at least 3 screenshots of the running application
-- [ ] `presentation/slides.pdf` — slide deck present
+### Branch & PR conventions
+
+- Work on feature branches: `feature/<short-description>`
+- Keep PRs focused — one feature or fix per PR
+- Run `pytest tests/ -v` (backend) before pushing
+- Run `npm run lint` (frontend) before pushing
+- Never commit `.env` files — they are in `.gitignore`
+- Never commit `node_modules/` or `.venv/`
+
+### Environment setup
+
+```bash
+# Backend
+cd src/backend
+cp .env.example .env
+# fill in WATSONX_* keys if testing watsonx.ai integration
+
+# Frontend
+cd src/frontend
+cp .env.local.example .env.local
+# NEXT_PUBLIC_API_URL defaults to http://localhost:8000
+```
+
+### Adding a new backend feature
+
+1. Create a service in `src/backend/app/services/` (business logic)
+2. Create a router in `src/backend/app/routers/` (HTTP layer)
+3. Register the router in `src/backend/app/main.py`
+4. Add corresponding API client function in `src/frontend/lib/api.ts`
+5. Create a React component in `src/frontend/components/`
+6. Wire it into the appropriate page in `src/frontend/app/`
+
+### ML model changes
+
+To retrain all models:
+
+```bash
+cd src/backend
+python -m app.ml_engine.train_models
+```
+
+Saved model artefacts are in `src/backend/app/ml_engine/saved_models/` and are committed to the repo so the app runs without retraining on first clone.
+
+---
+
+## Submission Checklist
+
+- [x] `submission.yaml` — all fields filled
+- [x] `README.md` — no placeholder text
+- [x] `docs/problem-statement.md` — completed
+- [x] `docs/solution-overview.md` — completed
+- [x] `docs/architecture.md` — completed
+- [x] `docs/setup-guide.md` — completed
+- [x] `src/` — full source code committed (no `node_modules`, no `.env`)
+- [ ] `demo/demo-video-link.txt` — add real video URL (3–5 min demo)
+- [ ] `demo/live-demo-url.txt` — add deployed URL or write "NOT DEPLOYED"
+- [ ] `demo/screenshots/` — add 3+ screenshots of the running app
+- [ ] `presentation/slides.pdf` — add slide deck
 - [ ] GitHub Actions **✅ Validate Submission** is green
 - [ ] Repository is **Public**
 - [ ] Entry form submitted before the deadline
-
----
