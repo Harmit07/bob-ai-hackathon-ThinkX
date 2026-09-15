@@ -3,7 +3,7 @@ team:
   track: "Sustainability"
   lead:
     name: "ThinkX Lead"
-    email: ""
+    email: "thinkx.lead@example.com"
   members:
     - name: ""
       email: ""
